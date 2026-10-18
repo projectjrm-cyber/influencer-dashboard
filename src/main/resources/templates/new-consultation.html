@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>New Consultation</title>
+  <link href="https://jsdelivr.net" rel="stylesheet">
+
+  <style>
+        body{
+            background:#f5f7fb;
+        }
+        .container-box{
+            max-width:800px;
+            margin:auto;
+            margin-top:50px;
+        }
+        .card{
+            border:none;
+            border-radius:20px;
+            box-shadow:0 4px 15px rgba(0,0,0,0.08);
+        }
+  </style>
+
+</head>
+
+<body>
+
+<div class="container-box">
+  <div class="card shadow-sm">
+    <div class="card-body p-4">
+
+      <h2 class="mb-4">Add Consultation</h2>
+
+      <!-- THYMELEAF ACTION WITH MULTIPART ENCTYPE -->
+      <form th:action="@{/consultation/save}" method="POST" enctype="multipart/form-data">
+
+        <!-- COPY PASTE RAW TEXTAREA -->
+        <div class="mb-4">
+          <label class="form-label fw-bold">Paste Instagram Message</label>
+          <textarea class="form-control"
+                    name="rawText"
+                    rows="10"
+                    placeholder="Paste your copied text details here... (e.g. Name: Rahul, Slot: Sat)"
+                    required></textarea>
+        </div>
+
+        <!-- FILE UPLOAD -->
+        <div class="mb-4">
+          <label class="form-label fw-bold">Upload Payment Screenshot</label>
+          <input type="file"
+                 class="form-control"
+                 name="paymentImage">
+        </div>
+
+        <!-- SUBMIT BUTTONS -->
+        <button type="submit" class="btn btn-dark px-4">
+          Save Consultation
+        </button>
+
+        <a th:href="@{/dashboard}" class="btn btn-secondary px-4">
+          Back
+        </a>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

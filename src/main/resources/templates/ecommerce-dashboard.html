@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>E-commerce Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+@keyframes gradientBG{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+@keyframes pulseNeon {
+    0% { box-shadow: 0 0 5px rgba(236, 72, 153,  0.2); }
+    50% { box-shadow: 0 0 20px rgba(245, 158, 11,  0.4); }
+    100% { box-shadow: 0 0 5px rgba(236, 72, 153,  0.2); }
+}
+
+@keyframes blink {
+    0%,  100% { opacity: 1; }
+    50% { opacity: 0.2; }
+}
+
+body{
+    background:linear-gradient(-45deg,#eef2ff,#f8fafc,#dbeafe,#f5f3ff);
+    background-size:400% 400%;
+    animation:gradientBG 18s ease infinite;
+    font-family:'Segoe UI',sans-serif;
+    min-height:100vh;
+}
+
+/* Sidebar layout width adjusted slightly to prioritize content body space */
+.sidebar{
+    width:245px;
+    height:100vh;
+    position:fixed;
+    left:0;
+    top:0;
+    background:linear-gradient(180deg,#0f172a,#1e293b);
+    padding:15px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow:0 0 30px rgba(0,0,0,.2);
+    z-index: 1000;
+    overflow-y: auto; /* Allows smooth scrolling within sidebar if contents expand */
+}
+
+.sidebar-top h3{
+    color:#fff;
+    font-weight:700;
+    margin-bottom:15px;
+    font-size:1.15rem;
+    text-align:center;
+}
+
+.sidebar a{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    border-radius:10px;
+    text-decoration:none;
+    color:#cbd5e1;
+    margin-bottom:6px;
+    transition:.3s;
+    font-size:0.85rem;
+}
+
+.sidebar a:hover,
+.sidebar a.active{
+    background:linear-gradient(135deg,#ec4899,#f59e0b);
+    color:#fff;
+    transform:translateX(4px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11,  0.3);
+}
+
+/* Custom premium glowing badges */
+.badge-audio {
+    background: linear-gradient(135deg, #06b6d4, #3b82f6);
+    color: #ffffff !important;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 8px rgba(6, 182, 212, 0.25);
+    padding: 5px 10px;
+}
+
+.badge-video {
+    background: linear-gradient(135deg, #ec4899, #8b5cf6);
+    color: #ffffff !important;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 8px rgba(236, 72, 153, 0.25);
+    padding: 5px 10px;
+}
+
+/* Custom premium glowing badges for all 3 variations */
+.badge-audio-20 {
+    background: linear-gradient(135deg, #06b6d4, #3b82f6);
+    color: #ffffff !important;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 8px rgba(6, 182, 212, 0.25);
+    padding: 5px 10px;
+}
+
+.badge-video-20 {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff !important;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+    padding: 5px 10px;
+}
+
+.badge-video-45 {
+    background: linear-gradient(135deg, #ec4899, #8b5cf6);
+    color: #ffffff !important;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 8px rgba(236, 72, 153, 0.25);
+    padding: 5px 10px;
+}
+
+.quick-add-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.quick-add-card:hover {
+    border-color: rgba(236, 72, 153,  0.4);
+    background: rgba(255,  255,  255,  0.06);
+}
+
+.quick-add-card h6 {
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.quick-add-card .form-control,
+.quick-add-card .form-select {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 5px 8px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+}
+
+.quick-add-card .form-select option {
+    background: #1e293b;
+    color: #fff;
+}
+
+.quick-add-card textarea.form-control {
+    resize: none;
+    height: 65px;
+}
+
+.quick-add-card .form-control::placeholder {
+    color: #475569;
+}
+
+.quick-add-card .form-control:focus,
+.quick-add-card .form-select:focus {
+    background: rgba(15, 23, 42, 0.8);
+    border-color: #3b82f6;
+    box-shadow: none;
+    color: #fff;
+}
+
+.quick-add-card .form-label-sm {
+    color: #94a3b8;
+    font-size: 0.68rem;
+    margin-bottom: 2px;
+    display: block;
+    font-weight: 600;
+}
+
+/* Elegant Drag and Drop Visual Box */
+.drag-drop-zone {
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 6px;
+}
+
+.drag-drop-zone:hover, .drag-drop-zone.dragover {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.drag-drop-zone i {
+    color: #94a3b8;
+    font-size: 1.1rem;
+    margin-bottom: 3px;
+    display: block;
+}
+
+.drag-drop-zone p {
+    color: #cbd5e1;
+    font-size: 0.68rem;
+    margin: 0;
+}
+
+.validation-error-msg {
+    display: none;
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.2);
+    font-size: 0.72rem;
+    padding: 6px 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.btn-sidebar-submit {
+    background: linear-gradient(135deg,#ec4899,#f59e0b);
+    color: #fff;
+    border: none;
+    width: 100%;
+    padding: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.btn-sidebar-submit:hover {
+    opacity: 0.9;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(236, 72, 153,  0.4);
+}
+
+/* Expanded Main Content to consume left-over real estate */
+.main-content{
+    margin-left:260px;
+    padding:25px 15px;
+}
+
+.dashboard-title{
+    font-size:34px;
+    font-weight:800;
+    background:linear-gradient(90deg,#ec4899,#f59e0b);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    margin: 0;
+}
+
+/* PREMIUM NEON DYNAMIC CLOCK WIDGET */
+.clock-widget {
+    background: rgba(255,  255,  255,  0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,  255,  255,  0.5);
+    border-radius: 14px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 20px rgba(15,  23,  42,  0.04);
+    animation: pulseNeon 5s infinite alternate;
+}
+
+.clock-time {
+    font-size:  1.35rem;
+    font-weight: 700;
+    background: linear-gradient(135deg,  #ec4899,  #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-variant-numeric: tabular-nums;
+}
+
+.clock-colon {
+    animation: blink 1s infinite;
+    display: inline-block;
+    color: #f59e0b;
+    -webkit-text-fill-color: initial;
+}
+
+.clock-date {
+    font-size: 0.7rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    line-height: 1.3;
+    border-left: 1px solid #cbd5e1;
+    padding-left: 12px;
+}
+
+.stat-card{
+    border-radius:18px;
+    padding:18px;
+    color:#fff;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(15,  23,  42,  0.15);
+}
+
+.total-card{background:linear-gradient(135deg,#4f46e5,#6366f1);}
+.pending-card{background:linear-gradient(135deg,#f59e0b,#eab308);}
+.completed-card{background:linear-gradient(135deg,#10b981,#059669);}
+.revenue-card{background:linear-gradient(135deg,#ec4899,#db2777);}
+
+.data-card{
+    background:rgba(255,255,255,.95);
+    backdrop-filter:blur(10px);
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 15px 40px rgba(0,0,0,.04);
+}
+
+/* Table layout adjustments to fix horizontal scrolling */
+.table-responsive {
+    overflow-x: hidden !important;
+}
+
+.table th{
+    background:#f8fafc!important;
+    font-size:.68rem;
+    text-transform:uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    padding: 10px 6px;
+}
+
+.table td{
+    padding: 10px 6px;
+    font-size: 0.88rem;
+}
+
+.payment-image{
+    width:50px;
+    height:50px;
+    object-fit:cover;
+    border-radius:10px;
+    border:2px solid #fff;
+    box-shadow:0 6px 15px rgba(0,0,0,.1);
+    transition:.3s;
+}
+
+.payment-image:hover{
+    transform:scale(3);
+    position:relative;
+    z-index:9999;
+}
+
+.slot-box{
+    background:#f8fafc;
+    padding:6px;
+    border-radius:8px;
+    border:1px solid #e2e8f0;
+    min-width:190px;
+}
+
+.current-slot{
+    display:inline-block;
+    margin-top:6px;
+    padding:4px 8px;
+    border-radius:8px;
+    background:#dcfce7;
+    color:#166534;
+    font-size:11px;
+}
+
+/* Ultra Compact Action Styles to stop layout screen bloating */
+.action-wrap{
+    display:flex;
+    flex-direction: column;
+    gap:4px;
+    width: max-content;
+}
+
+.btn-complete, .btn-delete, .btn-copy-action{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 5px 10px;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+
+.btn-complete{
+    background:#dcfce7;
+    color:#15803d;
+}
+.btn-complete:hover {
+    background:#bbf7d0;
+    color:#15803d;
+}
+
+.btn-delete{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+.btn-delete:hover {
+    background:#fecaca;
+    color:#b91c1c;
+}
+
+.btn-copy-action{
+    background: linear-gradient(135deg,#ec4899,#f59e0b);
+    color:#fff;
+    padding: 6px 12px;
+}
+.btn-copy-action:hover {
+    opacity: 0.9;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(245, 158, 11,  0.3);
+}
+
+/* ---- E-commerce additions ---- */
+.table-responsive { overflow-x: auto !important; }
+.quick-add-card textarea.form-control { height: 125px; }
+.filter-bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:16px; }
+.filter-btn { border:1px solid #e2e8f0; background:#fff; color:#475569; border-radius:20px; padding:5px 14px; font-size:.78rem; font-weight:600; transition:.2s; }
+.filter-btn:hover { border-color:#ec4899; color:#ec4899; }
+.filter-btn.active { background:linear-gradient(135deg,#ec4899,#f59e0b); color:#fff; border-color:transparent; }
+.search-box { margin-left:auto; max-width:240px; }
+.addr { max-width:210px; min-width:150px; white-space:normal; font-size:.8rem; }
+.pay-actions { display:flex; align-items:center; gap:6px; }
+.new-card { background:linear-gradient(135deg,#6366f1,#8b5cf6); }
+.progress-card { background:linear-gradient(135deg,#f59e0b,#eab308); }
+.dispatch-card { background:linear-gradient(135deg,#10b981,#059669); }
+.unpaid-card { background:linear-gradient(135deg,#ef4444,#dc2626); }
+
+/* Payment upload widget (sidebar) */
+.pay-btns { display:flex; gap:6px; margin-bottom:6px; }
+.btn-mini-dark { flex:1; border:1px solid rgba(255,255,255,.2); background:rgba(255,255,255,.06); color:#e2e8f0; border-radius:6px; font-size:.7rem; padding:5px; transition:.2s; }
+.btn-mini-dark:hover { border-color:#ec4899; background:rgba(236,72,153,.15); }
+.pay-status { font-size:.68rem; color:#fbbf24; min-height:14px; margin-bottom:6px; line-height:1.3; }
+
+/* Stage: radio buttons joined by one line  o----o----o----o */
+.stepper { display:flex; min-width:300px; margin:0; }
+.step { flex:1; position:relative; text-align:center; cursor:pointer; margin:0; }
+.step input { position:absolute; opacity:0; pointer-events:none; }
+.step .dot { display:block; width:18px; height:18px; margin:0 auto 4px; border-radius:50%; background:#fff; border:3px solid #cbd5e1; position:relative; z-index:2; transition:.2s; }
+.step::before { content:''; position:absolute; top:8px; left:-50%; width:100%; height:3px; background:#e2e8f0; z-index:1; }
+.step:first-child::before { display:none; }
+.step.done::before { background:linear-gradient(90deg,#ec4899,#f59e0b); }
+.step.done .dot { background:#ec4899; border-color:#ec4899; }
+.step.current .dot { box-shadow:0 0 0 4px rgba(236,72,153,.25); }
+.step:hover .dot { border-color:#f59e0b; }
+.step input:focus-visible + .dot { outline:2px solid #ec4899; outline-offset:2px; }
+.step small { display:block; font-size:.62rem; color:#64748b; font-weight:600; line-height:1.1; }
+.step.current small { color:#be185d; }
+
+@media (max-width: 991px) {
+  .sidebar { position:static; width:100%; height:auto; }
+  .main-content { margin-left:0; padding:15px; }
+  .dashboard-title { font-size:26px; }
+  .search-box { margin-left:0; max-width:100%; width:100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-top">
+        <h3><i class="fa-solid fa-bag-shopping"></i> Shop Panel</h3>
+        <a th:href="@{/ecommerce/dashboard}" class="active"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+        <a th:href="@{/logout}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </div>
+
+    <div class="sidebar-bottom">
+
+        <div class="quick-add-card">
+            <h6><i class="fa-solid fa-receipt"></i> Update Payment Proof</h6>
+            <form th:action="@{/ecommerce/order/update-payment}" method="POST" enctype="multipart/form-data" onsubmit="return checkPayForm(this)">
+                <span class="form-label-sm">Select Unpaid Order</span>
+                <select class="form-select" name="orderId" required>
+                    <option value="" disabled selected>-- Choose Order --</option>
+                    <option th:each="o : ${orders}" th:if="${!o.paid}" th:value="${o.id}"
+                            th:text="${'#' + o.id + ' ' + o.customerName + ' - ' + o.dressName}">#1 Priya - Frock</option>
+                </select>
+                <span class="form-label-sm">Payment Photo / Screenshot</span>
+                <div class="pay-upload" data-required="true">
+                    <div class="drag-drop-zone">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p class="pay-file-name">Drag screenshot here</p>
+                    </div>
+                    <div class="pay-btns">
+                        <button type="button" class="btn-mini-dark pay-camera"><i class="fa-solid fa-camera"></i> Take photo</button>
+                        <button type="button" class="btn-mini-dark pay-upload-btn"><i class="fa-solid fa-image"></i> Upload</button>
+                    </div>
+                    <input type="file" name="paymentImage" accept="image/*" class="pay-file" style="display:none;">
+                    <span class="form-label-sm">UTR / Transaction ID</span>
+                    <input type="text" name="utr" class="form-control pay-utr" maxlength="40" autocomplete="off" placeholder="Read from the image, or type it">
+                    <div class="pay-status"></div>
+                </div>
+                <button type="submit" class="btn btn-sidebar-submit"><i class="fa-solid fa-square-check"></i> Link Payment</button>
+            </form>
+        </div>
+
+        <div class="quick-add-card">
+            <h6><i class="fa-solid fa-paste"></i> Quick Copy Paste</h6>
+            <form th:action="@{/ecommerce/order/save}" method="POST" enctype="multipart/form-data">
+                <textarea class="form-control" id="rawText" name="rawText" required th:text="${rawText}"
+                          placeholder="Name: Priya&#10;Dress: Party frock&#10;Color: Pink&#10;Size: 4-5 yrs&#10;Phone: 9876543210&#10;Address: No 12, 2nd Cross, Indiranagar, Bengaluru 560038&#10;Amount: 1200"></textarea>
+                <span class="form-label-sm">Payment Photo / Screenshot (only if paid now)</span>
+                <div class="pay-upload">
+                    <div class="drag-drop-zone">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p class="pay-file-name">Drag screenshot here</p>
+                    </div>
+                    <div class="pay-btns">
+                        <button type="button" class="btn-mini-dark pay-camera"><i class="fa-solid fa-camera"></i> Take photo</button>
+                        <button type="button" class="btn-mini-dark pay-upload-btn"><i class="fa-solid fa-image"></i> Upload</button>
+                    </div>
+                    <input type="file" name="paymentImage" accept="image/*" class="pay-file" style="display:none;">
+                    <span class="form-label-sm">UTR / Transaction ID</span>
+                    <input type="text" name="utr" class="form-control pay-utr" maxlength="40" autocomplete="off" placeholder="Read from the image, or type it">
+                    <div class="pay-status"></div>
+                </div>
+                <button type="submit" class="btn btn-sidebar-submit mt-1"><i class="fa-solid fa-plus"></i> Add Order</button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<div class="main-content">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <h2 class="dashboard-title">🛍️ E-commerce Dashboard</h2>
+        <div class="clock-widget">
+            <div class="clock-time" id="liveClock">00<span class="clock-colon">:</span>00<span class="clock-colon">:</span>00 PM</div>
+            <div class="clock-date" id="liveDate">LOADING SYSTEM DATE...</div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4 animate__animated animate__fadeInDown">
+        <div class="col-6 col-md-2"><div class="stat-card total-card"><h6>Total Orders</h6><h2 th:text="${totalOrders}">0</h2></div></div>
+        <div class="col-6 col-md-2"><div class="stat-card unpaid-card"><h6>Payment Pending</h6><h2 th:text="${unpaidOrders}">0</h2></div></div>
+        <div class="col-6 col-md-2"><div class="stat-card new-card"><h6>To Order</h6><h2 th:text="${newOrders}">0</h2></div></div>
+        <div class="col-6 col-md-2"><div class="stat-card progress-card"><h6>In Progress</h6><h2 th:text="${inProgressOrders}">0</h2></div></div>
+        <div class="col-6 col-md-2"><div class="stat-card dispatch-card"><h6>Dispatched</h6><h2 th:text="${dispatchedOrders}">0</h2></div></div>
+        <div class="col-6 col-md-2"><div class="stat-card revenue-card"><h6>Revenue (Paid)</h6><h2>₹ <span th:text="${totalRevenue}">0</span></h2></div></div>
+    </div>
+
+    <div class="data-card animate__animated animate__fadeInUp">
+        <div class="d-flex justify-content-between align-items-baseline flex-wrap mb-3">
+            <h4 class="mb-0">All Orders</h4>
+            <small class="text-muted">Auto-refreshes every 3 minutes</small>
+        </div>
+
+        <div class="filter-bar">
+            <button type="button" class="filter-btn active" data-filter="all">All</button>
+            <button type="button" class="filter-btn" data-filter="unpaid">Payment pending</button>
+            <button type="button" class="filter-btn" data-filter="NEW">New</button>
+            <button type="button" class="filter-btn" data-filter="ORDERED">Manufacturing</button>
+            <button type="button" class="filter-btn" data-filter="PACKED">Packed</button>
+            <button type="button" class="filter-btn" data-filter="DISPATCHED">Dispatched</button>
+            <input type="search" id="searchBox" class="form-control form-control-sm search-box" placeholder="Search name, phone, dress, UTR...">
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                <tr>
+                    <th>ID</th><th>Date</th><th>Customer</th><th>Dress</th><th>Address</th>
+                    <th>Amount</th><th>Payment</th><th>Stage</th><th>Actions</th><th>Copy</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="o : ${orders}" class="order-row"
+                    th:data-stage="${o.stage}" th:data-paid="${o.paid}"
+                    th:data-search="${#strings.toLowerCase(o.customerName + ' ' + o.phone + ' ' + o.dressName + ' ' + (o.utr ?: ''))}">
+                    <td th:text="${o.id}">1</td>
+                    <td class="small text-muted" th:text="${o.createdLabel}">18 Oct, 10:30 AM</td>
+                    <td>
+                        <div class="fw-semibold" th:text="${o.customerName}">Priya</div>
+                        <a class="small text-muted text-decoration-none" th:href="${'tel:' + o.phone}" th:text="${o.phone}">9876543210</a>
+                    </td>
+                    <td>
+                        <div class="fw-semibold" th:text="${o.dressName}">Party frock</div>
+                        <div class="small text-muted"><span th:text="${o.color ?: '-'}">Pink</span> &middot; <span th:text="${o.dressSize ?: '-'}">4-5 yrs</span></div>
+                    </td>
+                    <td class="addr" th:text="${o.address ?: '-'}">No 12, 2nd Cross, Indiranagar</td>
+                    <td>
+                        <b th:if="${o.amount != null}" th:text="${'₹ ' + o.amount}">₹ 1200</b>
+                        <span th:if="${o.amount == null}" class="text-muted">-</span>
+                    </td>
+                    <td>
+                        <div class="pay-actions">
+                            <span th:if="${o.paid}" class="badge bg-success">PAID</span>
+                            <span th:unless="${o.paid}" class="badge bg-danger">UNPAID</span>
+                            <a th:if="${o.imageAttached}" th:href="@{/ecommerce/payment-image/{id}(id=${o.id})}" target="_blank">
+                                <img th:src="@{/ecommerce/payment-image/{id}(id=${o.id})}" class="payment-image" alt="Payment proof">
+                            </a>
+                        </div>
+                        <div th:if="${o.utr != null}" class="small mt-1"><span class="text-muted">UTR</span> <code th:text="${o.utr}">412345678901</code></div>
+                    </td>
+                    <td>
+                        <form class="stepper" th:action="@{'/ecommerce/order/' + ${o.id} + '/stage'}" method="post">
+                            <label th:each="s : ${stages}" class="step"
+                                   th:classappend="${s == o.stage} ? 'done current' : (${s.ordinal() lt o.stage.ordinal()} ? 'done' : '')">
+                                <input type="radio" name="stage" th:value="${s.name()}" th:checked="${s == o.stage}" onchange="this.form.submit()">
+                                <span class="dot"></span>
+                                <small th:text="${s.label}">New</small>
+                            </label>
+                        </form>
+                    </td>
+                    <td>
+                        <form th:action="@{'/ecommerce/order/' + ${o.id} + '/delete'}" method="post" onsubmit="return confirm('Delete this order?')">
+                            <button class="btn-delete"><i class="fa-solid fa-trash"></i> Delete</button>
+                        </form>
+                    </td>
+                    <td>
+                        <button type="button" class="btn-copy-action" onclick="copyOrder(this)"
+                                th:data-name="${o.customerName}" th:data-dress="${o.dressName}" th:data-color="${o.color}"
+                                th:data-size="${o.dressSize}" th:data-address="${o.address}" th:data-amount="${o.amount}"
+                                th:data-paid="${o.paid}" th:data-status="${o.stage.label}">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <p id="noRows" class="text-muted text-center my-3" style="display:none;">No orders match.</p>
+    </div>
+</div>
+
+<script>
+function runLiveClockSystem() {
+    const d = new Date();
+    let h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
+    const p = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    const z = n => (n < 10 ? '0' : '') + n;
+    document.getElementById('liveClock').innerHTML =
+        `${z(h)}<span class="clock-colon">:</span>${z(m)}<span class="clock-colon">:</span>${z(s)} ${p}`;
+    document.getElementById('liveDate').innerText =
+        d.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: '2-digit' });
+}
+setInterval(runLiveClockSystem, 1000);
+runLiveClockSystem();
+
+/* ---------- Payment photo: camera, upload, drag & drop, UTR reading ---------- */
+
+// Opens the device camera in a pop-up. Returns {ok:true} once the camera opened
+// (whether or not a photo was taken), or {ok:false, reason} if it could not open.
+async function openCamera(onPhoto) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        return { ok: false, reason: 'Unsupported' };
+    }
+    let stream;
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+            audio: false
+        });
+    } catch (e) {
+        return { ok: false, reason: e.name };
+    }
+    let video;
+    const result = await Swal.fire({
+        title: 'Take payment photo',
+        html: '<video id="camVideo" autoplay muted playsinline style="width:100%;max-height:60vh;border-radius:10px;background:#000"></video>',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-camera"></i> Capture',
+        confirmButtonColor: '#ec4899',
+        allowOutsideClick: false,
+        didOpen: () => { video = document.getElementById('camVideo'); video.srcObject = stream; },
+        preConfirm: () => {
+            if (!video.videoWidth) { Swal.showValidationMessage('Camera is not ready yet'); return false; }
+            const c = document.createElement('canvas');
+            c.width = video.videoWidth;
+            c.height = video.videoHeight;
+            c.getContext('2d').drawImage(video, 0, 0);
+            return new Promise(res => c.toBlob(b => res(b), 'image/jpeg', 0.92));
+        },
+        willClose: () => stream.getTracks().forEach(t => t.stop())
+    });
+    if (result.isConfirmed && result.value) {
+        onPhoto(new File([result.value], 'payment-' + Date.now() + '.jpg', { type: 'image/jpeg' }));
+    }
+    return { ok: true };
+}
+
+function setFile(input, f) {
+    const dt = new DataTransfer();
+    dt.items.add(f);
+    input.files = dt.files;
+}
+
+function initPayWidgets() {
+    document.querySelectorAll('.pay-upload').forEach(w => {
+        const file = w.querySelector('.pay-file'), nameEl = w.querySelector('.pay-file-name'),
+              utr = w.querySelector('.pay-utr'), status = w.querySelector('.pay-status'),
+              zone = w.querySelector('.drag-drop-zone');
+
+        // On phones "capture" opens the camera; on a computer it just opens the file chooser
+        const pick = camera => {
+            if (camera) file.setAttribute('capture', 'environment'); else file.removeAttribute('capture');
+            file.click();
+        };
+        w.querySelector('.pay-camera').addEventListener('click', async () => {
+            status.textContent = '';
+            const r = await openCamera(photo => { setFile(file, photo); onFile(); });
+            if (r.ok) return;
+            if (r.reason === 'NotAllowedError') {
+                status.textContent = '🚫 Camera is blocked. Click the lock icon in the address bar, allow Camera, then try again.';
+            } else if (r.reason === 'NotFoundError') {
+                status.textContent = '📷 No camera found on this device. Use Upload instead.';
+            } else {
+                pick(true); // camera API not available here: fall back to the phone camera / file chooser
+            }
+        });
+        w.querySelector('.pay-upload-btn').addEventListener('click', () => pick(false));
+        zone.addEventListener('click', () => pick(false));
+
+        ['dragenter', 'dragover'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.add('dragover'); }));
+        ['dragleave', 'drop'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.remove('dragover'); }));
+        zone.addEventListener('drop', e => {
+            if (e.dataTransfer.files.length > 0) { file.files = e.dataTransfer.files; onFile(); }
+        });
+        file.addEventListener('change', onFile);
+
+        function onFile() {
+            if (!file.files.length) return;
+            const f = file.files[0];
+            nameEl.textContent = f.name;
+            readUtr(f, utr, status);
+        }
+    });
+}
+
+async function toCanvas(file, maxSide) {
+    const bmp = await createImageBitmap(file);
+    const scale = Math.min(1, maxSide / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(bmp.width * scale);
+    c.height = Math.round(bmp.height * scale);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    return c;
+}
+
+function findUtr(text) {
+    // 1) a value right after a label such as UTR / UPI Ref No / Transaction ID
+    const labelRe = /(utr|upi\s*ref(?:erence)?\.?(?:\s*(?:no|number|id))?\.?|ref(?:erence)?\.?\s*(?:no|number|id)\.?|transaction\s*id|txn\s*id)\s*[:#.\-]?\s*([A-Za-z0-9]{8,35})/gi;
+    let m;
+    while ((m = labelRe.exec(text)) !== null) {
+        if ((m[2].match(/\d/g) || []).length >= 8) return m[2].toUpperCase();
+    }
+    // 2) otherwise the first standalone 12-digit number
+    const twelve = text.match(/\b\d{12}\b/);
+    return twelve ? twelve[0] : '';
+}
+
+async function readUtr(file, utrInput, status) {
+    if (typeof Tesseract === 'undefined') { status.textContent = 'Reader not loaded. Please type the UTR.'; return; }
+    status.textContent = '⏳ Reading UTR from the image...';
+    try {
+        const canvas = await toCanvas(file, 1600);
+        const result = await Tesseract.recognize(canvas, 'eng');
+        const found = findUtr(result.data.text || '');
+        if (found) {
+            utrInput.value = found;
+            status.textContent = '✅ UTR found. Please check it matches the image.';
+        } else {
+            status.textContent = '⚠️ Could not read a UTR. Please type it.';
+        }
+    } catch (e) {
+        status.textContent = '⚠️ Could not read the image. Please type the UTR.';
+    }
+}
+
+function checkPayForm(form) {
+    const w = form.querySelector('.pay-upload[data-required="true"]');
+    if (w && !w.querySelector('.pay-file').files.length) {
+        Swal.fire({ icon: 'error', title: 'Payment image needed',
+                    text: 'Please take a photo or upload the payment screenshot.', confirmButtonColor: '#ec4899' });
+        return false;
+    }
+    return true;
+}
+initPayWidgets();
+
+/* ---------- Filters + search (remembered across refreshes) ---------- */
+let activeFilter = 'all';
+const rows = document.querySelectorAll('.order-row');
+const searchBox = document.getElementById('searchBox');
+function applyFilters() {
+    const q = searchBox.value.trim().toLowerCase();
+    let shown = 0;
+    rows.forEach(r => {
+        const okFilter = activeFilter === 'all'
+            || (activeFilter === 'unpaid' ? r.dataset.paid === 'false' : r.dataset.stage === activeFilter);
+        const okSearch = !q || r.dataset.search.includes(q);
+        const show = okFilter && okSearch;
+        r.style.display = show ? '' : 'none';
+        if (show) shown++;
+    });
+    document.getElementById('noRows').style.display = (rows.length > 0 && shown === 0) ? 'block' : 'none';
+    try { sessionStorage.setItem('shopFilter', activeFilter); sessionStorage.setItem('shopSearch', searchBox.value); } catch (e) {}
+}
+function setFilterButton() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === activeFilter));
+}
+document.querySelectorAll('.filter-btn').forEach(b => b.addEventListener('click', () => {
+    activeFilter = b.dataset.filter;
+    setFilterButton();
+    applyFilters();
+}));
+searchBox.addEventListener('input', applyFilters);
+try {
+    activeFilter = sessionStorage.getItem('shopFilter') || 'all';
+    searchBox.value = sessionStorage.getItem('shopSearch') || '';
+} catch (e) {}
+setFilterButton();
+applyFilters();
+
+/* ---------- Copy a confirmation message to paste into WhatsApp / Instagram ---------- */
+function copyOrder(btn) {
+    const d = btn.dataset;
+    let text = `🛍️ ORDER CONFIRMED 🛍️\n\n👤 Name : ${d.name}\n\n👗 Dress : ${d.dress}\n\n🎨 Color : ${d.color || '-'}\n\n📏 Size : ${d.size || '-'}\n\n📍 Address : ${d.address || '-'}\n\n`;
+    if (d.amount) text += `💰 Amount : ₹${d.amount}\n\n`;
+    text += `💳 Payment : ${d.paid === 'true' ? 'Received ✅' : 'Pending'}\n\n📦 Status : ${d.status}\n\nThank you 🙏`;
+    navigator.clipboard.writeText(text).then(() => {
+        Swal.fire({ icon: 'success', title: 'Copied!', text: 'Order message is ready to paste.', timer: 1600, showConfirmButton: false });
+    });
+}
+
+/* ---------- Auto refresh every 3 minutes (waits while you are busy) ---------- */
+const REFRESH_MS = 3 * 60 * 1000;
+function safeToRefresh() {
+    if (Swal.isVisible()) return false;
+    if (document.getElementById('rawText').value.trim()) return false;
+    if (Array.from(document.querySelectorAll('.pay-file')).some(f => f.files.length > 0)) return false;
+    const a = document.activeElement;
+    if (a && ['INPUT', 'TEXTAREA', 'SELECT'].includes(a.tagName)) return false;
+    return true;
+}
+function scheduleRefresh(ms) {
+    setTimeout(() => { if (safeToRefresh()) location.reload(); else scheduleRefresh(15000); }, ms);
+}
+scheduleRefresh(REFRESH_MS);
+</script>
+
+<script th:inline="javascript">
+    // Messages from the server show as pop-ups
+    const flashError = /*[[${errorMessage}]]*/ null;
+    const flashSuccess = /*[[${successMessage}]]*/ null;
+    if (flashError) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Please check this',
+            text: flashError,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#ec4899',
+            showClass: { popup: 'animate__animated animate__fadeInDown' }
+        });
+    } else if (flashSuccess) {
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: flashSuccess, showConfirmButton: false, timer: 2200 });
+    }
+</script>
+</body>
+</html>

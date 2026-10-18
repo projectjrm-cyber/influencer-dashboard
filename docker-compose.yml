@@ -1,0 +1,10 @@
+# For running the app locally in Docker. Render does NOT use this file.
+services:
+  app:
+    build: .
+    container_name: influencer_springboot_app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env

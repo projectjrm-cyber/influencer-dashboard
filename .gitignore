@@ -1,0 +1,21 @@
+# Build output
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# Secrets and local data - never commit these
+.env
+uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+HELP.md

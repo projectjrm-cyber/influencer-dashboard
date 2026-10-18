@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Consultation Dashboard Pro</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <style>
+@keyframes gradientBG{
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+}
+
+@keyframes pulseNeon {
+    0% { box-shadow: 0 0 5px rgba(37,  99,  235,  0.2); }
+    50% { box-shadow: 0 0 20px rgba(124,  58,  237,  0.4); }
+    100% { box-shadow: 0 0 5px rgba(37,  99,  235,  0.2); }
+}
+
+@keyframes blink {
+    0%,  100% { opacity: 1; }
+    50% { opacity: 0.2; }
+}
+
+body{
+    background:linear-gradient(-45deg,#eef2ff,#f8fafc,#dbeafe,#f5f3ff);
+    background-size:400% 400%;
+    animation:gradientBG 18s ease infinite;
+    font-family:'Segoe UI',sans-serif;
+    min-height:100vh;
+}
+
+/* Sidebar layout width adjusted slightly to prioritize content body space */
+.sidebar{
+    width:245px;
+    height:100vh;
+    position:fixed;
+    left:0;
+    top:0;
+    background:linear-gradient(180deg,#0f172a,#1e293b);
+    padding:15px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow:0 0 30px rgba(0,0,0,.2);
+    z-index: 1000;
+    overflow-y: auto; /* Allows smooth scrolling within sidebar if contents expand */
+}
+
+.sidebar-top h3{
+    color:#fff;
+    font-weight:700;
+    margin-bottom:15px;
+    font-size:1.15rem;
+    text-align:center;
+}
+
+.sidebar a{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    border-radius:10px;
+    text-decoration:none;
+    color:#cbd5e1;
+    margin-bottom:6px;
+    transition:.3s;
+    font-size:0.85rem;
+}
+
+.sidebar a:hover,
+.sidebar a.active{
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:#fff;
+    transform:translateX(4px);
+    box-shadow: 0 4px 12px rgba(124,  58,  237,  0.3);
+}
+
+/* Custom premium glowing badges */
+.badge-audio {
+    background: linear-gradient(135deg, #06b6d4, #3b82f6);
+    color: #ffffff !important;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 8px rgba(6, 182, 212, 0.25);
+    padding: 5px 10px;
+}
+
+.badge-video {
+    background: linear-gradient(135deg, #ec4899, #8b5cf6);
+    color: #ffffff !important;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 8px rgba(236, 72, 153, 0.25);
+    padding: 5px 10px;
+}
+
+/* Custom premium glowing badges for all 3 variations */
+.badge-audio-20 {
+    background: linear-gradient(135deg, #06b6d4, #3b82f6);
+    color: #ffffff !important;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 8px rgba(6, 182, 212, 0.25);
+    padding: 5px 10px;
+}
+
+.badge-video-20 {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff !important;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+    padding: 5px 10px;
+}
+
+.badge-video-45 {
+    background: linear-gradient(135deg, #ec4899, #8b5cf6);
+    color: #ffffff !important;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 2px 8px rgba(236, 72, 153, 0.25);
+    padding: 5px 10px;
+}
+
+.quick-add-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.quick-add-card:hover {
+    border-color: rgba(37,  99,  235,  0.4);
+    background: rgba(255,  255,  255,  0.06);
+}
+
+.quick-add-card h6 {
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.quick-add-card .form-control,
+.quick-add-card .form-select {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: 0.75rem;
+    padding: 5px 8px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+}
+
+.quick-add-card .form-select option {
+    background: #1e293b;
+    color: #fff;
+}
+
+.quick-add-card textarea.form-control {
+    resize: none;
+    height: 65px;
+}
+
+.quick-add-card .form-control::placeholder {
+    color: #475569;
+}
+
+.quick-add-card .form-control:focus,
+.quick-add-card .form-select:focus {
+    background: rgba(15, 23, 42, 0.8);
+    border-color: #3b82f6;
+    box-shadow: none;
+    color: #fff;
+}
+
+.quick-add-card .form-label-sm {
+    color: #94a3b8;
+    font-size: 0.68rem;
+    margin-bottom: 2px;
+    display: block;
+    font-weight: 600;
+}
+
+/* Elegant Drag and Drop Visual Box */
+.drag-drop-zone {
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 6px;
+}
+
+.drag-drop-zone:hover, .drag-drop-zone.dragover {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.drag-drop-zone i {
+    color: #94a3b8;
+    font-size: 1.1rem;
+    margin-bottom: 3px;
+    display: block;
+}
+
+.drag-drop-zone p {
+    color: #cbd5e1;
+    font-size: 0.68rem;
+    margin: 0;
+}
+
+.validation-error-msg {
+    display: none;
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.2);
+    font-size: 0.72rem;
+    padding: 6px 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.btn-sidebar-submit {
+    background: linear-gradient(135deg,#2563eb,#7c3aed);
+    color: #fff;
+    border: none;
+    width: 100%;
+    padding: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.btn-sidebar-submit:hover {
+    opacity: 0.9;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(37,  99,  235,  0.4);
+}
+
+/* Expanded Main Content to consume left-over real estate */
+.main-content{
+    margin-left:260px;
+    padding:25px 15px;
+}
+
+.dashboard-title{
+    font-size:34px;
+    font-weight:800;
+    background:linear-gradient(90deg,#2563eb,#7c3aed);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    margin: 0;
+}
+
+/* PREMIUM NEON DYNAMIC CLOCK WIDGET */
+.clock-widget {
+    background: rgba(255,  255,  255,  0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,  255,  255,  0.5);
+    border-radius: 14px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 20px rgba(15,  23,  42,  0.04);
+    animation: pulseNeon 5s infinite alternate;
+}
+
+.clock-time {
+    font-size:  1.35rem;
+    font-weight: 700;
+    background: linear-gradient(135deg,  #2563eb,  #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-variant-numeric: tabular-nums;
+}
+
+.clock-colon {
+    animation: blink 1s infinite;
+    display: inline-block;
+    color: #7c3aed;
+    -webkit-text-fill-color: initial;
+}
+
+.clock-date {
+    font-size: 0.7rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    line-height: 1.3;
+    border-left: 1px solid #cbd5e1;
+    padding-left: 12px;
+}
+
+.stat-card{
+    border-radius:18px;
+    padding:18px;
+    color:#fff;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    transition:.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(15,  23,  42,  0.15);
+}
+
+.total-card{background:linear-gradient(135deg,#4f46e5,#6366f1);}
+.pending-card{background:linear-gradient(135deg,#f59e0b,#eab308);}
+.completed-card{background:linear-gradient(135deg,#10b981,#059669);}
+.revenue-card{background:linear-gradient(135deg,#ec4899,#db2777);}
+
+.data-card{
+    background:rgba(255,255,255,.95);
+    backdrop-filter:blur(10px);
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 15px 40px rgba(0,0,0,.04);
+}
+
+/* Table layout adjustments to fix horizontal scrolling */
+.table-responsive {
+    overflow-x: hidden !important;
+}
+
+.table th{
+    background:#f8fafc!important;
+    font-size:.68rem;
+    text-transform:uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    padding: 10px 6px;
+}
+
+.table td{
+    padding: 10px 6px;
+    font-size: 0.88rem;
+}
+
+.payment-image{
+    width:50px;
+    height:50px;
+    object-fit:cover;
+    border-radius:10px;
+    border:2px solid #fff;
+    box-shadow:0 6px 15px rgba(0,0,0,.1);
+    transition:.3s;
+}
+
+.payment-image:hover{
+    transform:scale(3);
+    position:relative;
+    z-index:9999;
+}
+
+.slot-box{
+    background:#f8fafc;
+    padding:6px;
+    border-radius:8px;
+    border:1px solid #e2e8f0;
+    min-width:190px;
+}
+
+.current-slot{
+    display:inline-block;
+    margin-top:6px;
+    padding:4px 8px;
+    border-radius:8px;
+    background:#dcfce7;
+    color:#166534;
+    font-size:11px;
+}
+
+/* Ultra Compact Action Styles to stop layout screen bloating */
+.action-wrap{
+    display:flex;
+    flex-direction: column;
+    gap:4px;
+    width: max-content;
+}
+
+.btn-complete, .btn-delete, .btn-copy-action{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 5px 10px;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+
+.btn-complete{
+    background:#dcfce7;
+    color:#15803d;
+}
+.btn-complete:hover {
+    background:#bbf7d0;
+    color:#15803d;
+}
+
+.btn-delete{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+.btn-delete:hover {
+    background:#fecaca;
+    color:#b91c1c;
+}
+
+.btn-copy-action{
+    background: linear-gradient(135deg,#2563eb,#7c3aed);
+    color:#fff;
+    padding: 6px 12px;
+}
+.btn-copy-action:hover {
+    opacity: 0.9;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(124,  58,  237,  0.3);
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-top">
+        <h3><i class="fa-solid fa-chart-line"></i> Admin Panel</h3>
+        <a th:href="@{/dashboard}" class="active">
+            <i class="fa-solid fa-gauge"></i> Dashboard
+        </a>
+        <a th:href="@{/logout}">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+    </div>
+
+    <div class="sidebar-bottom">
+
+        <div class="quick-add-card">
+            <h6><i class="fa-solid fa-receipt"></i> Update Payment Proof</h6>
+            <form th:action="@{/consultation/update-payment}" method="POST" enctype="multipart/form-data">
+
+                <span class="form-label-sm">Select Registered Client</span>
+                <select class="form-select" name="consultationId" required>
+                    <option value="" disabled selected>-- Choose User --</option>
+                    <option th:each="c : ${consultations}"
+                            th:value="${c.id}"
+                            th:text="${c.name + ' (' + c.instagramId + ')'}">
+                        Aradhya Sharma (@aradhya_creates)
+                    </option>
+                </select>
+
+                <span class="form-label-sm">Drop Image Here</span>
+                <div class="drag-drop-zone" id="dropZone" onclick="document.getElementById('sideDropFileInput').click()">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p id="dropZoneText">Drag screenshot or Click</p>
+                    <input type="file" id="sideDropFileInput" name="paymentImage" style="display: none;" required onchange="handleFileSelect(this)">
+                </div>
+
+                <button type="submit" class="btn btn-sidebar-submit">
+                    <i class="fa-solid fa-square-check"></i> Link Payment
+                </button>
+            </form>
+        </div>
+
+        <div class="quick-add-card">
+            <h6><i class="fa-brands fa-instagram"></i> Quick Copy Paste</h6>
+            <form id="quickAddForm" th:action="@{/consultation/save}" method="POST" enctype="multipart/form-data" onsubmit="return validateRawText()">
+                <textarea class="form-control" id="rawTextInput" name="rawText" placeholder="Name: Rahul&#10;Instagram: @rahul&#10;Consultation: Video..." required></textarea>
+                <div id="errorBanner" class="validation-error-msg">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Invalid Format! Please include Name, an @ username, and Slot details.
+                </div>
+                <span class="form-label-sm">Payment Screenshot (Optional)</span>
+                <input type="file" class="form-control" name="paymentImage">
+                <button type="submit" class="btn btn-sidebar-submit mt-1">
+                    <i class="fa-solid fa-plus"></i> Register Consultation
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<div class="main-content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="dashboard-title">🚀 Consultation Dashboard</h2>
+
+        <div class="clock-widget">
+            <div class="clock-time" id="liveClock">00<span class="clock-colon">:</span>00<span class="clock-colon">:</span>00 PM</div>
+            <div class="clock-date" id="liveDate">LOADING SYSTEM DATE...</div>
+        </div>
+    </div>
+    </header> <!-- This is line 517 -->
+
+    <!-- ✅ PASTE THIS EXACTLY ON THE NEW LINE 518: -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-bottom: 25px; font-weight: 500; background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; padding: 15px; border-radius: 8px; position: relative; width: 100%;">
+        <strong>❌ Format Validation Error!</strong> <span th:text="${errorMessage}">Error description goes here.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #842029;">×</button>
+    </div>
+
+    <div class="row g-3 mb-4 animate__animated animate__fadeInDown"> <!-- This shifts down beautifully -->
+
+    <div class="row g-3 mb-4 animate__animated animate__fadeInDown">
+        <div class="col-md-3">
+            <div class="stat-card total-card">
+                <h6>Total Consultations</h6>
+                <h2 th:text="${totalConsultations}">4</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card pending-card">
+                <h6>Pending</h6>
+                <h2 th:text="${pendingConsultations}">3</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card completed-card">
+                <h6>Completed</h6>
+                <h2 th:text="${completedConsultations}">1</h2>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card revenue-card">
+                <h6>Total Revenue</h6>
+                <h2>₹ <span th:text="${totalRevenue}">2100</span></h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="data-card animate__animated animate__fadeInUp">
+        <h4 class="mb-4">All Consultations</h4>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Instagram</th>
+                    <th>Consultation</th>
+                    <th>Preferred Slot</th>
+                    <th>Set Slot</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Actions</th>
+                    <th>Copy</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="consultation : ${consultations}">
+                    <td th:text="${consultation.id}">153</td>
+                    <td th:text="${consultation.name}">Aradhya Sharma</td>
+                    <td th:text="${consultation.instagramId}">@aradhya_creates</td>
+                    <td>
+    <span th:class="${#strings.containsIgnoreCase(consultation.consultationType, 'Audio')} ? 'badge badge-audio-20' :
+                    (${#strings.containsIgnoreCase(consultation.consultationType, '45')} ? 'badge badge-video-45' : 'badge badge-video-20')"
+          th:text="${consultation.consultationType}">
+          Video Call (20 Min)
+    </span>
+                    </td>
+
+                    <td th:text="${consultation.preferredSlot}">Morning 11 AM</td>
+                    <td>
+                        <div class="slot-box">
+                            <form th:action="@{'/consultation/set-slot/' + ${consultation.id}}" method="post">
+                                <div class="d-flex gap-2">
+                                    <input type="datetime-local" name="confirmedSlot" class="form-control form-control-sm">
+                                    <button class="btn btn-success btn-sm"><i class="fa-solid fa-floppy-disk"></i></button>
+                                </div>
+                            </form>
+                            <div th:if="${consultation.confirmedSlot != null}" class="current-slot">
+                                <i class="fa-regular fa-clock"></i> <span th:text="${consultation.confirmedSlot}"></span>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="badge bg-warning text-dark" th:text="${consultation.status}">PENDING</span></td>
+                    <td class="text-center">
+                        <a th:if="${consultation.paymentImage != null}" th:href="@{/payment-image/{id}(id=${consultation.id})}" target="_blank">
+                            <img th:src="@{/payment-image/{id}(id=${consultation.id})}" class="payment-image" src="https://via.placeholder.com/85">
+                        </a>
+                        <span th:if="${consultation.paymentImage == null}" class="text-muted small">No Image</span>
+                    </td>
+                    <td>
+                        <div class="action-wrap">
+                            <a th:href="@{'/consultation/status/' + ${consultation.id} + '/COMPLETED'}" class="btn-complete">
+                                <i class="fa-solid fa-check"></i> Complete
+                            </a>
+                            <a th:href="@{'/consultation/delete/' + ${consultation.id}}" class="btn-delete" onclick="return confirm('Delete this record?')">
+                                <i class="fa-solid fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn-copy-action" th:attr="onclick=|copyConsultation('${consultation.name}','${consultation.instagramId}','${consultation.consultationType}','${consultation.confirmedSlot}')|">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+// Highly Accurate Live UI Clock Widget Engine
+function runLiveClockSystem() {
+    const timeDisplay = document.getElementById('liveClock');
+    const dateDisplay = document.getElementById('liveDate');
+
+    const activeDate = new Date();
+
+    let currentHours = activeDate.getHours();
+    let currentMinutes = activeDate.getMinutes();
+    let currentSeconds = activeDate.getSeconds();
+    const periodMarker = currentHours >= 12 ? 'PM' : 'AM';
+
+    currentHours = currentHours % 12;
+    currentHours = currentHours ? currentHours : 12;
+
+    currentHours = currentHours < 10 ? '0' + currentHours : currentHours;
+    currentMinutes = currentMinutes < 10 ? '0' + currentMinutes : currentMinutes;
+    currentSeconds = currentSeconds < 10 ? '0' + currentSeconds : currentSeconds;
+
+    timeDisplay.innerHTML = `${currentHours}<span class="clock-colon">:</span>${currentMinutes}<span class="clock-colon">:</span>${currentSeconds} ${periodMarker}`;
+
+    const parsingOptions = { weekday: 'short', year: 'numeric', month: 'short', day: '2-digit' };
+    dateDisplay.innerText = activeDate.toLocaleDateString('en-US', parsingOptions);
+}
+setInterval(runLiveClockSystem, 1000);
+runLiveClockSystem();
+
+// Drag and Drop Logic Hook for Sidebar File Box
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('sideDropFileInput');
+const dropZoneText = document.getElementById('dropZoneText');
+
+['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    }, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+    }, false);
+});
+
+dropZone.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if(files.length > 0) {
+        fileInput.files = files;
+        dropZoneText.innerText = files[0].name;
+    }
+});
+
+function handleFileSelect(input) {
+    if(input.files.length > 0) {
+        dropZoneText.innerText = input.files[0].name;
+    }
+}
+
+function validateRawText() {
+    const textValue = document.getElementById("rawTextInput").value;
+    const errorBanner = document.getElementById("errorBanner");
+
+    const hasInstagramHandle = /@[A-Za-z0-9_.]+/.test(textValue);
+    const textLengthValid = textValue.trim().length > 15;
+    const isGibberish = /^[a-zA-Z]{15,}$/.test(textValue.trim()) || (textValue.split(/\s+/).length < 3 && !hasInstagramHandle);
+
+    if (!hasInstagramHandle || !textLengthValid || isGibberish) {
+        errorBanner.style.display = "block";
+        document.getElementById("rawTextInput").focus();
+        return false;
+    }
+
+    errorBanner.style.display = "none";
+    return true;
+}
+
+function copyConsultation(name, instagram, consultation, slot) {
+    if (!slot || slot === 'null' || slot.trim() === '') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Slot Missing!',
+            text: 'Please assign a confirmed date and time slot before copying the text templates.',
+            background: '#ffffff',
+            confirmButtonColor: '#7c3aed',
+            showClass: { popup: 'animate__animated animate__backInDown' },
+            hideClass: { popup: 'animate__animated animate__fadeOutUp' }
+        });
+        return;
+    }
+
+    let formattedSlot = slot;
+    try {
+        const dateObj = new Date(slot);
+        if (!isNaN(dateObj.getTime())) {
+            const options = {
+                weekday: 'long',
+                day: '2-digit',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            };
+            formattedSlot = dateObj.toLocaleString('en-US', options);
+        }
+    } catch (e) {
+        console.error("Could not format date, falling back to raw value.", e);
+    }
+
+    let text = `🌟 CONSULTATION CONFIRMED 🌟\n\n👤 Name : ${name}\n\n📸 Instagram : ${instagram}\n\n📋 Consultation : ${consultation}\n\n🗓️ Confirmed Slot : ${formattedSlot}\n\n✅ Please join 5 minutes before the scheduled time.\n\nThank you 🙏`;
+
+    navigator.clipboard.writeText(text).then(() => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Copied!',
+            text: 'Consultation templates are ready to paste.',
+            background: '#ffffff',
+            timer: 1600,
+            showConfirmButton: false
+        });
+    });
+}
+</script>
+</div>
+</body>
+</html>
